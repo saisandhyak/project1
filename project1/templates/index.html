@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Recorder</title>
+    <style>
+        table {
+            width: 100%;
+            margin: 20px 0;
+        }
+        td {
+            vertical-align: top;
+            padding: 20px;
+        }
+        h2 {
+            margin-bottom: 10px;
+        }
+        h4 {
+            margin-top: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            margin-bottom: 10px;
+        }
+        textarea {
+            width: 100%;
+        }
+        button, input[type="submit"] {
+            margin-top: 10px;
+            padding: 10px;
+        }
+        audio {
+            margin-top: 10px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <table>
+        <tr>
+            <!-- Left Section: Record and Upload -->
+            <td style="width: 50%;">
+                <h2>Record and Upload Audio</h2>
+
+                <button id="record">Record</button>
+                <button id="stop" disabled>Stop</button>
+                <span id="timer">00:00</span>
+
+                <audio id="audio" controls></audio>
+
+                <form id="uploadForm" method="POST" enctype="multipart/form-data" action="/upload">
+                    <input type="hidden" name="audio_data" id="audioData">
+                    <input type="submit" value="Upload Audio" disabled>
+                </form>
+
+                <hr>
+
+                <h2>Recorded Files</h2>
+                <h4>Click on the file to view the converted text</h4>
+                <ul>
+                    {% for file in files %}
+                    <li>
+                        <a href="uploads/{{file}}" target="_blank">{{file}}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </td>
+
+            <!-- Right Section: Text-to-Speech and Generated Audio -->
+            <td style="width: 50%;">
+                <h2>Type in your text to generate audio</h2>
+
+                <form action="/upload_text" method="post">
+                    <textarea name="text" rows="10" placeholder="Enter your text here..."></textarea>
+                    <br>
+                    <input type="submit" value="Generate Audio">
+                </form>
+
+                <hr>
+
+                <h2>Converted Text to Audio Files</h2>
+                <ul>
+                    {% for file in audios %}
+                    <li>
+                        <audio controls>
+                            <source src="{{ url_for('get_audio', filename=file) }}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio><br>
+                        <a href="{{ url_for('get_audio', filename=file) }}" download>{{file}}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+    </table>
+
+    <script src="script.js"></script>
+</body>
+</html>
